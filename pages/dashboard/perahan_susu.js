@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "@chakra-ui/react";
-import FormPerahan from "../../form/FormPerahan";
+import FormPerahan from "../../Form/FormPerahan";
 import DashboardLayout from "../../layouts/dashboard";
 import Head from "next/head";
 

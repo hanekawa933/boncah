@@ -1,5 +1,5 @@
 import { Box } from "@chakra-ui/react";
-import { TablePenjualanSusu, TablePenjualanPupuk } from "../../table/Penjualan";
+import { TablePenjualanSusu, TablePenjualanPupuk } from "../../Table/Penjualan";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import DashboardLayout from "../../layouts/dashboard";
 import Head from "next/head";

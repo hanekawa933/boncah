@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Button } from "@chakra-ui/react";
-import FormKandang from "../../form/FormKandang";
+import FormKandang from "../../Form/FormKandang";
 import DashboardLayout from "../../layouts/dashboard";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import Link from "next/link";

@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Button } from "@chakra-ui/react";
-import FormKambing from "../../form/FormKambing";
+import FormKambing from "../../Form/FormKambing";
 import DashboardLayout from "../../layouts/dashboard";
 import { AddIcon } from "@chakra-ui/icons";
 import Link from "next/link";

@@ -1,6 +1,6 @@
 import React from "react";
 import { Box } from "@chakra-ui/react";
-import TablePerahan from "../../table/TablePerahan";
+import TablePerahan from "../../Table/TablePerahan";
 import DashboardLayout from "../../layouts/dashboard";
 import Head from "next/head";
 

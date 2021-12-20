@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
-import { FormPenjualanSusu, FormPenjualanPupuk } from "../../form/Penjualan";
+import { FormPenjualanSusu, FormPenjualanPupuk } from "../../Form/Penjualan";
 import DashboardLayout from "../../layouts/dashboard";
 import Head from "next/head";
 
