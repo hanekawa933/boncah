@@ -66,8 +66,8 @@ const Home = () => {
   const kambeng = jumlahKambing && jumlahKambing.data ? jumlahKambing.data : [];
   const listOfWidget = dataWidget(
     hasilPerahan.data,
-    produksiSusu.data2,
-    produksiSusu.data,
+    !produksiSusu.data2 ? 0 : produksiSusu.data2,
+    !produksiSusu.data ? 0 : produksiSusu.data,
     produksiPupuk.data,
     stockSusu.data2,
     stockSusu.data,
