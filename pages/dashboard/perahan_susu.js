@@ -13,6 +13,9 @@ const Perahan = () => {
       <DashboardLayout>
         <Box px="3" pb="10">
           <Box p="10" boxShadow="lg" borderRadius="lg">
+            <Box as="h1" fontWeight="700" fontSize="1.3em">
+              Produksi Perahan Susu
+            </Box>
             <FormPerahan />
           </Box>
         </Box>

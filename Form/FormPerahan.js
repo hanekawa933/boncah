@@ -157,6 +157,7 @@ const FormPerahan = () => {
     getFieldProps,
     handleBlur,
     values,
+    setFieldValue,
   } = formik;
 
   return (
@@ -241,7 +242,13 @@ const FormPerahan = () => {
                         min={0}
                         max={values.hasil_perahan}
                         {...field}
-                        onChange={(val) => form.setFieldValue(field.name, val)}
+                        onChange={(val) => {
+                          form.setFieldValue(field.name, val);
+
+                          if (parseInt(val) <= 0) {
+                            setFieldValue("keterangan_pemerahan_id", 3);
+                          }
+                        }}
                         name="hasil_berkurang"
                         width="90%"
                       >

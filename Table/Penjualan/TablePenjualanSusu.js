@@ -7,7 +7,12 @@ import "moment/locale/id";
 import InputFilterTable from "../../components/InputFilterTable";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { CalendarIcon, DownloadIcon } from "@chakra-ui/icons";
+import {
+  CalendarIcon,
+  DownloadIcon,
+  EditIcon,
+  DeleteIcon,
+} from "@chakra-ui/icons";
 import instance from "../../axios.default";
 
 const TablePenjualanSusu = () => {
@@ -26,9 +31,9 @@ const TablePenjualanSusu = () => {
       const today = await instance.get(`/susu/penjualan/total${query}`);
       setReportPenjualan(report.data);
       setTotal(today.data);
+      console.log(today.data);
       setLoading(true);
     } catch (error) {
-      alert("ALLO");
       console.log(error);
     }
   };
@@ -57,12 +62,34 @@ const TablePenjualanSusu = () => {
   ));
 
   const columnNames = [
-    { names: "No", selector: "no" },
-    { names: "Jenis Susu", selector: "jenis_susu_id" },
-    { names: "Paket Terjual", selector: "jumlah_terjual_paket" },
-    { names: "Liter Terjual", selector: "jumlah_terjual_liter" },
-    { names: "Hasil Penjualan", selector: "hasil_penjualan" },
-    { names: "Tanggal", selector: "tanggal" },
+    { names: "No", selector: "no", center: false, sortable: true },
+    { names: "Tanggal", selector: "tanggal", center: false, sortable: true },
+    {
+      names: "Jenis Susu",
+      selector: "jenis_susu_id",
+      center: false,
+      sortable: true,
+    },
+    {
+      names: "Paket Terjual",
+      selector: "jumlah_terjual_paket",
+      center: false,
+      sortable: true,
+    },
+    {
+      names: "Liter Terjual",
+      selector: "jumlah_terjual_liter",
+      center: false,
+      sortable: true,
+    },
+    {
+      names: "Hasil Penjualan",
+      selector: "hasil_penjualan",
+      center: false,
+      sortable: true,
+    },
+    { names: "Tamu", selector: "tamu", center: true, sortable: false },
+    { names: "Aksi", selector: "action", center: true, sortable: false },
   ];
 
   const buttonSettings = [
@@ -133,6 +160,27 @@ const TablePenjualanSusu = () => {
             jumlah_terjual_liter: res.jumlah_terjual_liter + " liter",
             hasil_penjualan: numToIdr.format(res.hasil_penjualan),
             tanggal: moment(res.tanggal).format("Do MMMM YYYY"),
+            tamu: (
+              <Button colorScheme="green" variant="solid" size="sm">
+                Lihat Tamu
+              </Button>
+            ),
+            action: (
+              <Box display="flex">
+                <Button
+                  colorScheme="teal"
+                  variant="solid"
+                  mx="1"
+                  size="sm"
+                  onClick={() => openAndSetIds(res.id)}
+                >
+                  <EditIcon />
+                </Button>
+                <Button colorScheme="red" variant="solid" size="sm">
+                  <DeleteIcon />
+                </Button>
+              </Box>
+            ),
           };
         })
       : [];
@@ -154,11 +202,26 @@ const TablePenjualanSusu = () => {
     }
   });
 
+  let totalJumlahTerjual = filteredItems.reduce(
+    (sum, item) => sum + parseInt(item.jumlah_terjual_paket),
+    0
+  );
+
+  let totalHasilPenjualan = filteredItems.reduce(
+    (sum, item) =>
+      parseFloat(sum) +
+      parseFloat(
+        item.hasil_penjualan.replace("Rp", "").trim().replaceAll(".", "")
+      ),
+    0
+  );
+
   const columns = columnNames.map((res) => {
     return {
       name: res.names,
       selector: (row) => row[res.selector],
-      sortable: true,
+      sortable: res.sortable,
+      center: res.center,
     };
   });
 
@@ -194,9 +257,9 @@ const TablePenjualanSusu = () => {
         <Box display="flex" justifyContent="space-between" px="5" pt="5">
           <Skeleton isLoaded={loading}>
             <Box>
-              <Text>Total Paket Terjual: {total && total.data} paket</Text>
+              <Text>Total Paket Terjual: {totalJumlahTerjual} paket</Text>
               <Text>
-                Total Hasil Penjualan: {numToIdr.format(total && total.data2)}
+                Total Hasil Penjualan: {numToIdr.format(totalHasilPenjualan)}
               </Text>
             </Box>
           </Skeleton>

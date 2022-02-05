@@ -27,6 +27,7 @@ import {
   InputRightAddon,
   useToast,
   Skeleton,
+  Text,
 } from "@chakra-ui/react";
 import DataTable from "react-data-table-component";
 import moment from "moment";
@@ -108,12 +109,12 @@ const TablePerahan = () => {
 
   const columnNames = [
     { names: "No", selector: "no" },
+    { names: "Tanggal", selector: "tanggal" },
     { names: "Hasil Perahan", selector: "hasil_perahan" },
     { names: "Pengurangan Susu", selector: "hasil_berkurang" },
     { names: "Total Perahan", selector: "total_perahan" },
     { names: "Waktu Pemerahan", selector: "waktu_pemerahan_id" },
     { names: "Keterangan Pengurangan", selector: "keterangan_pemerahan_id" },
-    { names: "Tanggal", selector: "tanggal" },
     { names: "Aksi", selector: "action", center: true },
   ];
 
@@ -213,14 +214,38 @@ const TablePerahan = () => {
   const filteredItems = dataTable.filter((item) => {
     if (!filterText) return true;
     if (
-      item.jenis_susu_id.toLowerCase().includes(filterText.toLowerCase()) ||
-      item.jumlah_paket.toLowerCase().includes(filterText.toLowerCase()) ||
-      item.jumlah_liter.toLowerCase().includes(filterText.toLowerCase()) ||
+      item.hasil_perahan.toLowerCase().includes(filterText.toLowerCase()) ||
+      item.hasil_berkurang.toLowerCase().includes(filterText.toLowerCase()) ||
+      item.total_perahan.toLowerCase().includes(filterText.toLowerCase()) ||
+      item.waktu_pemerahan_id
+        .toLowerCase()
+        .includes(filterText.toLowerCase()) ||
+      item.keterangan_pemerahan_id
+        .toLowerCase()
+        .includes(filterText.toLowerCase()) ||
       item.tanggal.toLowerCase().includes(filterText.toLowerCase())
     ) {
       return true;
     }
   });
+
+  let totalJumlahPerahan = filteredItems.reduce(
+    (sum, item) =>
+      sum + parseFloat(item.hasil_perahan.replace("liter", "").trim()),
+    0
+  );
+
+  let totalJumlahBerkurang = filteredItems.reduce(
+    (sum, item) =>
+      sum + parseFloat(item.hasil_berkurang.replace("liter", "").trim()),
+    0
+  );
+
+  let totalJumlahLiter = filteredItems.reduce(
+    (sum, item) =>
+      sum + parseFloat(item.total_perahan.replace("liter", "").trim()),
+    0
+  );
 
   const columns = columnNames.map((res) => {
     return {
@@ -594,7 +619,14 @@ const TablePerahan = () => {
         <Heading fontSize="2xl" mt="7">
           Laporan Hasil Perahan Susu
         </Heading>
-        <Box display="flex" justifyContent="end" px="5">
+        <Box display="flex" justifyContent="space-between" pt="5" px="5">
+          <Skeleton isLoaded={loading}>
+            <Box>
+              <Text>Hasil Perahan: {totalJumlahPerahan} liter</Text>
+              <Text>Hasil Berkurang: {totalJumlahBerkurang} liter</Text>
+              <Text>Total Hasil Perahan: {totalJumlahLiter} liter</Text>
+            </Box>
+          </Skeleton>
           <Button leftIcon={<DownloadIcon />} colorScheme="green" size="md">
             Unduh Laporan
           </Button>

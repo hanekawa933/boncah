@@ -27,6 +27,7 @@ import {
   InputRightAddon,
   useToast,
   Skeleton,
+  Text,
 } from "@chakra-ui/react";
 import DataTable from "react-data-table-component";
 import moment from "moment";
@@ -95,10 +96,10 @@ const TableProduksiSusu = () => {
 
   const columnNames = [
     { names: "No", selector: "no", width: "10%" },
+    { names: "Tanggal", selector: "tanggal" },
     { names: "Jenis Susu", selector: "jenis_susu_id" },
     { names: "Jumlah Produksi", selector: "jumlah_paket" },
     { names: "Jumlah Liter", selector: "jumlah_liter" },
-    { names: "Tanggal", selector: "tanggal" },
     { names: "Aksi", selector: "action", center: true },
   ];
 
@@ -200,6 +201,18 @@ const TableProduksiSusu = () => {
       return true;
     }
   });
+
+  let totalJumlahProduksi = filteredItems.reduce(
+    (sum, item) =>
+      sum + parseInt(item.jumlah_paket.replace("paket", "").trim()),
+    0
+  );
+
+  let totalJumlahProduksiLiter = filteredItems.reduce(
+    (sum, item) =>
+      sum + parseFloat(item.jumlah_liter.replace("paket", "").trim()),
+    0
+  );
 
   const columns = columnNames.map((res) => {
     return {
@@ -460,7 +473,15 @@ const TableProduksiSusu = () => {
         <Heading fontSize="2xl" mt="7">
           Laporan Produksi Susu
         </Heading>
-        <Box display="flex" justifyContent="end" px="5">
+        <Box display="flex" justifyContent="space-between" pt="5" px="5">
+          <Skeleton isLoaded={loading}>
+            <Box>
+              <Text>Total Produksi (paket): {totalJumlahProduksi} paket</Text>
+              <Text>
+                Total Produksi (liter): {totalJumlahProduksiLiter} liter
+              </Text>
+            </Box>
+          </Skeleton>
           <Button leftIcon={<DownloadIcon />} colorScheme="green" size="md">
             Unduh Laporan
           </Button>

@@ -15,8 +15,8 @@ import {
 } from "@chakra-ui/icons";
 import instance from "../axios.default";
 
-const TablePengeluaran = () => {
-  const [query, setQuery] = useState(`/pengeluaran/report`);
+const TablePemasukanLainnya = () => {
+  const [query, setQuery] = useState(`/penjualan/pemasukan/report`);
   const [active, setActive] = useState([1]);
   const [filterText, setFilterText] = React.useState("");
   const [startDate, setStartDate] = useState(new Date());
@@ -61,11 +61,10 @@ const TablePengeluaran = () => {
   const columnNames = [
     { names: "No", selector: "no", sortable: true },
     { names: "Tanggal", selector: "tanggal", sortable: true },
-    { names: "Pengeluaran", selector: "pengeluaran", sortable: true },
-    { names: "Pesan", selector: "pesan", sortable: true },
+    { names: "Pemasukan", selector: "pemasukan", sortable: true },
     {
-      names: "Kategori Pengeluaran",
-      selector: "kategori_pengeluaran_id",
+      names: "Jenis Pemasukan",
+      selector: "kategori_pemasukan_id",
       sortable: true,
     },
     { names: "Aksi", selector: "action", center: true, sortable: false },
@@ -74,17 +73,17 @@ const TablePengeluaran = () => {
   const buttonSettings = [
     {
       name: "Bulan Lalu",
-      query: "/pengeluaran/report?search=prev_month",
+      query: "/penjualan/pemasukan/report?search=prev_month",
     },
-    { name: "Bulan Ini", query: "/pengeluaran/report" },
-    { name: "Hari ini", query: "/pengeluaran/report?search=today" },
+    { name: "Bulan Ini", query: "/penjualan/pemasukan/report" },
+    { name: "Hari ini", query: "/penjualan/pemasukan/report?search=today" },
     {
       name: "Minggu ini",
-      query: "/pengeluaran/report?search=this_week",
+      query: "/penjualan/pemasukan/report?search=this_week",
     },
     {
       name: "Semua",
-      query: "/pengeluaran/report?search=all",
+      query: "/penjualan/pemasukan/report?search=all",
     },
   ];
 
@@ -131,13 +130,12 @@ const TablePengeluaran = () => {
       ? report.data.map((res, index) => {
           return {
             no: index + 1,
-            pengeluaran: numToIdr.format(res.pengeluaran),
-            pesan: res.pesan,
-            kategori_pengeluaran_id:
-              res.kategori_pengeluaran && res.kategori_pengeluaran.kategori
-                ? res.kategori_pengeluaran.kategori
-                : undefined,
             tanggal: moment(res.tanggal).format("Do MMMM YYYY"),
+            pemasukan: numToIdr.format(res.pemasukan),
+            kategori_pemasukan_id:
+              res.kategori_pemasukan && res.kategori_pemasukan.kategori
+                ? res.kategori_pemasukan.kategori
+                : undefined,
             action: (
               <Box display="flex">
                 <Button
@@ -161,9 +159,8 @@ const TablePengeluaran = () => {
   const filteredItems = dataTable.filter((item) => {
     if (!filterText) return true;
     if (
-      item.pengeluaran.toLowerCase().includes(filterText.toLowerCase()) ||
-      item.pesan.toLowerCase().includes(filterText.toLowerCase()) ||
-      item.kategori_pengeluaran_id
+      item.pemasukan.toLowerCase().includes(filterText.toLowerCase()) ||
+      item.kategori_pemasukan_id
         .toLowerCase()
         .includes(filterText.toLowerCase()) ||
       item.tanggal.toLowerCase().includes(filterText.toLowerCase())
@@ -172,10 +169,10 @@ const TablePengeluaran = () => {
     }
   });
 
-  let totalPengeluaran = filteredItems.reduce(
+  let totalPemasukan = filteredItems.reduce(
     (sum, item) =>
       parseFloat(sum) +
-      parseFloat(item.pengeluaran.replace("Rp", "").trim().replaceAll(".", "")),
+      parseFloat(item.pemasukan.replace("Rp", "").trim().replaceAll(".", "")),
     0
   );
 
@@ -195,7 +192,7 @@ const TablePengeluaran = () => {
     const month = dateObj.getMonth() + 1;
     const date = dateObj.getDate();
     setQuery(
-      `/pengeluaran/report?search=custom&year=${year}&month=${month}&date=${date}`
+      `/penjualan/pemasukan/report?search=custom&year=${year}&month=${month}&date=${date}`
     );
     setActive([5]);
     setLoading(false);
@@ -215,13 +212,13 @@ const TablePengeluaran = () => {
       </Box>
       <Box>
         <Heading fontSize="2xl" mt="7">
-          Laporan Pengeluaran
+          Laporan Pemasukan Lainnya
         </Heading>
         <Box display="flex" justifyContent="space-between" pt="5" px="5">
           <Skeleton isLoaded={loading}>
             <Box>
               <Text>
-                Total Hasil Penjualan: {numToIdr.format(totalPengeluaran)}
+                Total Hasil Pemasukan: {numToIdr.format(totalPemasukan)}
               </Text>
             </Box>
           </Skeleton>
@@ -248,4 +245,4 @@ const TablePengeluaran = () => {
   );
 };
 
-export default TablePengeluaran;
+export default TablePemasukanLainnya;

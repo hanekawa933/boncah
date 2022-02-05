@@ -1,13 +1,18 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect, forwardRef } from "react";
-import { Box, Button, Heading, Skeleton } from "@chakra-ui/react";
+import { Box, Button, Heading, Skeleton, Text } from "@chakra-ui/react";
 import DataTable from "react-data-table-component";
 import moment from "moment";
 import "moment/locale/id";
 import InputFilterTable from "../../components/InputFilterTable";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { CalendarIcon, DownloadIcon } from "@chakra-ui/icons";
+import {
+  CalendarIcon,
+  DownloadIcon,
+  EditIcon,
+  DeleteIcon,
+} from "@chakra-ui/icons";
 import instance from "../../axios.default";
 
 const TablePenjualanPupuk = () => {
@@ -53,10 +58,11 @@ const TablePenjualanPupuk = () => {
   ));
 
   const columnNames = [
-    { names: "No", selector: "no" },
-    { names: "Paket Terjual", selector: "jumlah_terjual" },
-    { names: "Hasil Penjualan", selector: "hasil_penjualan" },
-    { names: "Tanggal", selector: "tanggal" },
+    { names: "No", selector: "no", sortable: true },
+    { names: "Tanggal", selector: "tanggal", sortable: true },
+    { names: "Paket Terjual", selector: "jumlah_terjual", sortable: true },
+    { names: "Hasil Penjualan", selector: "hasil_penjualan", sortable: true },
+    { names: "Aksi", selector: "action", sortable: false, center: true },
   ];
 
   const buttonSettings = [
@@ -122,6 +128,22 @@ const TablePenjualanPupuk = () => {
             jumlah_terjual: res.jumlah_terjual + " karung",
             hasil_penjualan: numToIdr.format(res.hasil_penjualan),
             tanggal: moment(res.tanggal).format("Do MMMM YYYY"),
+            action: (
+              <Box display="flex">
+                <Button
+                  colorScheme="teal"
+                  variant="solid"
+                  mx="1"
+                  size="sm"
+                  onClick={() => openAndSetIds(res.id)}
+                >
+                  <EditIcon />
+                </Button>
+                <Button colorScheme="red" variant="solid" size="sm">
+                  <DeleteIcon />
+                </Button>
+              </Box>
+            ),
           };
         })
       : [];
@@ -137,11 +159,26 @@ const TablePenjualanPupuk = () => {
     }
   });
 
+  let totalJumlahTerjual = filteredItems.reduce(
+    (sum, item) => sum + parseInt(item.jumlah_terjual),
+    0
+  );
+
+  let totalHasilPenjualan = filteredItems.reduce(
+    (sum, item) =>
+      parseFloat(sum) +
+      parseFloat(
+        item.hasil_penjualan.replace("Rp", "").trim().replaceAll(".", "")
+      ),
+    0
+  );
+
   const columns = columnNames.map((res) => {
     return {
       name: res.names,
       selector: (row) => row[res.selector],
-      sortable: true,
+      sortable: res.sortable,
+      center: res.center,
     };
   });
 
@@ -174,7 +211,15 @@ const TablePenjualanPupuk = () => {
         <Heading fontSize="2xl" mt="7">
           Laporan Penjualan Pupuk
         </Heading>
-        <Box display="flex" justifyContent="end" px="5">
+        <Box display="flex" justifyContent="space-between" px="5" pt="5">
+          <Skeleton isLoaded={loading}>
+            <Box>
+              <Text>Total Paket Terjual: {totalJumlahTerjual} paket</Text>
+              <Text>
+                Total Hasil Penjualan: {numToIdr.format(totalHasilPenjualan)}
+              </Text>
+            </Box>
+          </Skeleton>
           <Button leftIcon={<DownloadIcon />} colorScheme="green" size="md">
             Unduh Laporan
           </Button>

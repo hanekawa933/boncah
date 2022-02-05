@@ -12,15 +12,15 @@ import * as Yup from "yup";
 import { useFormik, Form, FormikProvider } from "formik";
 import instance from "../axios.default";
 
-const FormKandang = () => {
+const FormSusu = () => {
   const toast = useToast();
   const Schema = Yup.object().shape({
-    kandang: Yup.string("Input harus berupa string").required(
+    jenis_susu: Yup.string("Input harus berupa string").required(
       "Input tidak boleh kosong"
     ),
   });
 
-  const createKandang = async (values) => {
+  const createSusu = async (values) => {
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -28,7 +28,7 @@ const FormKandang = () => {
     };
     const body = JSON.stringify(values);
     try {
-      const res = await instance.post("/kambing/kandang", body, config);
+      const res = await instance.post("/susu/jenis_susu", body, config);
       toast({
         title: "Input Berhasil",
         status: "success",
@@ -48,11 +48,11 @@ const FormKandang = () => {
 
   const formik = useFormik({
     initialValues: {
-      kandang: "",
+      jenis_susu: "",
     },
     validationSchema: Schema,
     onSubmit: async (values, { resetForm, setSubmitting }) => {
-      await createKandang(values);
+      await createSusu(values);
       resetForm({});
       setSubmitting(false);
     },
@@ -72,18 +72,18 @@ const FormKandang = () => {
       <FormikProvider value={formik}>
         <Form autoComplete="off" noValidate onSubmit={handleSubmit}>
           <FormControl
-            id="kandang"
-            isInvalid={Boolean(touched.kandang && errors.kandang)}
+            id="jenis_susu"
+            isInvalid={Boolean(touched.jenis_susu && errors.jenis_susu)}
           >
-            <FormLabel>Nama Kandang</FormLabel>
+            <FormLabel>Jenis Susu</FormLabel>
             <Input
               type="text"
-              name="kandang"
-              {...getFieldProps("kandang")}
+              name="jenis_susu"
+              {...getFieldProps("jenis_susu")}
               onBlur={handleBlur}
             />
             <FormErrorMessage>
-              {touched.kandang && errors.kandang}
+              {touched.jenis_susu && errors.jenis_susu}
             </FormErrorMessage>
           </FormControl>
           <Box display="flex" justifyContent="end">
@@ -102,4 +102,4 @@ const FormKandang = () => {
   );
 };
 
-export default FormKandang;
+export default FormSusu;

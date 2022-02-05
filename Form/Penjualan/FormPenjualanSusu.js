@@ -17,6 +17,7 @@ import {
   NumberDecrementStepper,
   Checkbox,
   Skeleton,
+  useToast,
 } from "@chakra-ui/react";
 import * as Yup from "yup";
 import { useFormik, Form, FormikProvider, Field } from "formik";
@@ -25,8 +26,10 @@ import "moment/locale/id";
 import instance from "../../axios.default";
 
 const FormPenjualanSusu = () => {
+  const toast = useToast();
   const [stock, setStock] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [update, setUpdate] = useState(0);
   const fetchStockTersedia = async () => {
     try {
       const res = await instance.get("/susu/produksi/stock");
@@ -38,7 +41,7 @@ const FormPenjualanSusu = () => {
   };
   useEffect(() => {
     fetchStockTersedia();
-  }, []);
+  }, [update]);
 
   const date = new Date();
   const today = date.toISOString().substr(0, 10);
@@ -64,15 +67,18 @@ const FormPenjualanSusu = () => {
     const jumlah_terjual = `jumlah_terjual_${res.name.toLowerCase()}`;
     const hasil_penjualan = `hasil_penjualan_${res.name.toLowerCase()}`;
     const checkbox = `checkbox_${res.name.toLowerCase()}`;
-    const tamu = `tamu_${res.name.toLowerCase()}`;
+    const tamu = `tamu_penjualan_${res.name.toLowerCase()}`;
 
     schemaFields = {
       ...schemaFields,
       [jenis_susu]: Yup.number().required("Input tidak boleh kosong"),
       [jumlah_terjual]: Yup.number().required("Input tidak boleh kosong"),
       [hasil_penjualan]: Yup.number().required("Input tidak boleh kosong"),
-      [checkbox]: Yup.number().required("Input tidak boleh kosong"),
-      [tamu]: Yup.string().required("Input tidak boleh kosong"),
+      [checkbox]: Yup.bool().nullable(),
+      [tamu]: Yup.string().when(checkbox, {
+        is: true,
+        then: Yup.string().required("Input tidak boleh kosong"),
+      }),
     };
 
     initValues = {
@@ -96,8 +102,7 @@ const FormPenjualanSusu = () => {
           : undefined;
       const jumlah_terjual = `jumlah_terjual_${jenis_susu.toLowerCase()}`;
       const hasil_penjualan = `hasil_penjualan_${jenis_susu.toLowerCase()}`;
-      const checkbox = `checkbox_${jenis_susu.toLowerCase()}`;
-      const tamu = `tamu_${jenis_susu.toLowerCase()}`;
+      const tamu = `tamu_penjualan_${jenis_susu.toLowerCase()}`;
 
       inputValues = {
         ...inputValues,
@@ -105,8 +110,7 @@ const FormPenjualanSusu = () => {
         [jenis_susu]: res.jenis_susu_id,
         [jumlah_terjual]: val[jumlah_terjual],
         [hasil_penjualan]: val[hasil_penjualan],
-        [checkbox]: val[checkbox],
-        [tamu]: val[checkbox],
+        [tamu]: val[tamu],
       };
       // }
     });
@@ -123,9 +127,10 @@ const FormPenjualanSusu = () => {
 
     const body = JSON.stringify(values);
     try {
-      const res = await axios.post("/susu/penjualan", body, config);
+      const res = await instance.post("/susu/penjualan", body, config);
+      setUpdate(update + 1);
       toast({
-        title: "Berhasil login",
+        title: "Input berhasil",
         status: "success",
         duration: 2000,
         position: "top",
@@ -133,7 +138,7 @@ const FormPenjualanSusu = () => {
     } catch (error) {
       toast({
         title: !error.response ? "Server Error" : error.response.data.msg,
-        description: "Gagal login!",
+        description: "Input gagal!",
         status: "error",
         duration: 2000,
         position: "top",
@@ -144,9 +149,8 @@ const FormPenjualanSusu = () => {
   const formik = useFormik({
     initialValues: initValues,
     validationSchema: Schema,
-    onSubmit: async (values, { resetForm, setSubmitting }) => {
+    onSubmit: async (values, { resetForm }) => {
       await createPenjualanSusu(inputData(values));
-      setSubmitting(false);
       resetForm({});
     },
     enableReinitialize: true,
@@ -188,7 +192,10 @@ const FormPenjualanSusu = () => {
       const checkbox =
         jenis_susu === undefined ? "" : `checkbox_${jenis_susu.toLowerCase()}`;
       const tamu =
-        jenis_susu === undefined ? "" : `tamu_${jenis_susu.toLowerCase()}`;
+        jenis_susu === undefined
+          ? ""
+          : `tamu_penjualan_${jenis_susu.toLowerCase()}`;
+
       return (
         <Box mt="5">
           <Box display="flex" key={res.id} alignItems="center">
@@ -196,7 +203,7 @@ const FormPenjualanSusu = () => {
               <Text fontWeight="700" textTransform="uppercase">
                 {jenis_susu}
               </Text>
-              {res.jumlah_paket <= 0 ? (
+              {res.jumlah_paket <= 0 || res === null ? (
                 <Text fontSize="md" textColor="red.500">
                   Stock tidak tersedia
                 </Text>
@@ -302,7 +309,15 @@ const FormPenjualanSusu = () => {
               <Checkbox
                 colorScheme="green"
                 name={checkbox}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange(e);
+                  e.target.checked === true
+                    ? setFieldValue(hasil_penjualan, 0)
+                    : setFieldValue(
+                        hasil_penjualan,
+                        parseInt(values[jumlah_terjual]) * 6500
+                      );
+                }}
               ></Checkbox>
               <FormErrorMessage>
                 {touched[checkbox] && errors[checkbox]}
@@ -356,7 +371,7 @@ const FormPenjualanSusu = () => {
               </FormErrorMessage>
             </FormControl>
             <Box>
-              {stockData.includes(null) ? (
+              {stockData.includes(!null) ? (
                 <Text fontSize="2em" mt="5" textAlign="center">
                   Stock belum tersedia.
                 </Text>

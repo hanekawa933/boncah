@@ -1,13 +1,18 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect, forwardRef } from "react";
-import { Box, Button, Heading, Skeleton } from "@chakra-ui/react";
+import { Box, Button, Heading, Skeleton, Text } from "@chakra-ui/react";
 import DataTable from "react-data-table-component";
 import moment from "moment";
 import "moment/locale/id";
 import InputFilterTable from "../../components/InputFilterTable";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { CalendarIcon, DownloadIcon } from "@chakra-ui/icons";
+import {
+  CalendarIcon,
+  DownloadIcon,
+  EditIcon,
+  DeleteIcon,
+} from "@chakra-ui/icons";
 import instance from "../../axios.default";
 
 const TableProduksiPupuk = () => {
@@ -53,9 +58,10 @@ const TableProduksiPupuk = () => {
   ));
 
   const columnNames = [
-    { names: "No", selector: "no" },
-    { names: "Jumlah Produksi", selector: "jumlah_karung" },
-    { names: "Tanggal", selector: "tanggal" },
+    { names: "No", selector: "no", sortable: true },
+    { names: "Tanggal", selector: "tanggal", sortable: true },
+    { names: "Jumlah Produksi", selector: "jumlah_karung", sortable: true },
+    { names: "Aksi", selector: "action", sortable: false, center: true },
   ];
 
   const buttonSettings = [
@@ -120,6 +126,22 @@ const TableProduksiPupuk = () => {
             no: index + 1,
             jumlah_karung: res.jumlah_karung + " karung",
             tanggal: moment(res.tanggal).format("Do MMMM YYYY"),
+            action: (
+              <Box display="flex">
+                <Button
+                  colorScheme="teal"
+                  variant="solid"
+                  mx="1"
+                  size="sm"
+                  onClick={() => openAndSetIds(res.id)}
+                >
+                  <EditIcon />
+                </Button>
+                <Button colorScheme="red" variant="solid" size="sm">
+                  <DeleteIcon />
+                </Button>
+              </Box>
+            ),
           };
         })
       : [];
@@ -134,11 +156,18 @@ const TableProduksiPupuk = () => {
     }
   });
 
+  let totalJumlahProduksi = filteredItems.reduce(
+    (sum, item) =>
+      sum + parseInt(item.jumlah_karung.replace("karung", "").trim()),
+    0
+  );
+
   const columns = columnNames.map((res) => {
     return {
       name: res.names,
       selector: (row) => row[res.selector],
-      sortable: true,
+      sortable: res.sortable,
+      center: res.center,
     };
   });
 
@@ -171,7 +200,12 @@ const TableProduksiPupuk = () => {
         <Heading fontSize="2xl" mt="7">
           Laporan Produksi Pupuk
         </Heading>
-        <Box display="flex" justifyContent="end" px="5">
+        <Box display="flex" justifyContent="space-between" pt="5" px="5">
+          <Skeleton isLoaded={loading}>
+            <Box>
+              <Text>Total Produksi: {totalJumlahProduksi} karung</Text>
+            </Box>
+          </Skeleton>
           <Button leftIcon={<DownloadIcon />} colorScheme="green" size="md">
             Unduh Laporan
           </Button>

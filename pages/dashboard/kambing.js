@@ -22,7 +22,7 @@ const Penjualan = () => {
               alignItems="center"
             >
               <Box fontWeight="semibold" fontSize="1.4em">
-                Buat Kambing
+                Kambing Produksi
               </Box>
               <Link href="/dashboard/kandang" passHref>
                 <Button colorScheme="blue" leftIcon={<AddIcon />}>

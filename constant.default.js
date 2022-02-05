@@ -1,5 +1,5 @@
 const defPath = () => {
-  return "https://boncah-api.vercel.app/public/images";
+  return "https://boncahfarm.online/api/public/images";
 };
 
 const path = defPath();

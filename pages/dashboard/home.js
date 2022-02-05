@@ -27,12 +27,8 @@ const Home = () => {
   const [jumlahKambing, setJumlahKambing] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const todaysDate = new Date();
-  const date = moment(
-    `${todaysDate.getFullYear()}-${
-      todaysDate.getMonth() + 1
-    }-${todaysDate.getDate()}`
-  ).format("Do-MMM-YYYY");
+  // const todaysDate = new Date();
+  const date = moment().format("Do-MMM-YYYY");
 
   const fetchAllTheData = async (query) => {
     const hasil_perahan = await instance.get(`/susu/perahan/total${query}`);
@@ -65,19 +61,19 @@ const Home = () => {
 
   const kambeng = jumlahKambing && jumlahKambing.data ? jumlahKambing.data : [];
   const listOfWidget = dataWidget(
-    hasilPerahan.data,
+    !hasilPerahan.data ? 0 : hasilPerahan.data,
     !produksiSusu.data2 ? 0 : produksiSusu.data2,
     !produksiSusu.data ? 0 : produksiSusu.data,
-    produksiPupuk.data,
-    stockSusu.data2,
-    stockSusu.data,
-    stockPupuk.data,
-    penjualanSusu.data,
-    penjualanSusu.data2,
-    penjualanPupuk.data,
-    penjualanPupuk.data2,
+    !produksiPupuk.data ? 0 : produksiPupuk.data,
+    !stockSusu.data2 ? 0 : stockSusu.data2,
+    !stockSusu.data ? 0 : stockSusu.data,
+    !stockPupuk.data ? 0 : stockPupuk.data,
+    !penjualanSusu.data ? 0 : penjualanSusu.data,
+    !penjualanSusu.data2 ? 0 : penjualanSusu.data2,
+    !penjualanPupuk.data ? 0 : penjualanPupuk.data,
+    !penjualanPupuk.data2 ? 0 : penjualanPupuk.data2,
     !totalPenjualan.data ? 0 : totalPenjualan.data,
-    totalPenjualan.data2,
+    !totalPenjualan.data2 ? 0 : totalPenjualan.data2,
     !kambeng.jantan ? 0 : kambeng.jantan,
     !kambeng.betina ? 0 : kambeng.betina,
     !kambeng.anakan ? 0 : kambeng.anakan,

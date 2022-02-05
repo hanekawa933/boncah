@@ -24,6 +24,7 @@ const GraphProduksiPupukMonthly = () => {
     try {
       const res = await instance.get(query);
       setProduksiPupukMonthly(res.data);
+      console.log(res.data);
     } catch (error) {
       alert("ERROR FROM GRAPH PRODUKSI PUPUK");
     }

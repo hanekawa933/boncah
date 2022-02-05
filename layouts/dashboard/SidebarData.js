@@ -66,8 +66,8 @@ const operational = [
     icon: getIcon(product),
   },
   {
-    text: "penjualan",
-    to: "/dashboard/penjualan",
+    text: "pemasukan",
+    to: "/dashboard/pemasukan",
     icon: getIcon(sell),
   },
   {
@@ -112,14 +112,19 @@ const report = [
     icon: getIcon(stock),
   },
   {
-    text: "penjualan",
-    to: "/dashboard/report_penjualan",
+    text: "pemasukan",
+    to: "/dashboard/report_pemasukan",
     icon: getIcon(sell),
   },
   {
     text: "pengeluaran",
     to: "/dashboard/report_pengeluaran",
     icon: getIcon(expenditure),
+  },
+  {
+    text: "kambing",
+    to: "/dashboard/report_kambing",
+    icon: getIcon(goat),
   },
 ];
 
